@@ -1,0 +1,110 @@
+\documentclass[letterpaper]{article}
+
+\title{Requirements Specification \\ Game of Life}
+\author{J. Anthony Sterrett, Jr.}
+\date{}
+
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\lhead{}
+\chead{}
+\rhead{}
+\rfoot{Version 0.1}
+
+\begin{document}
+
+\maketitle
+
+\section{Core Concepts}
+
+\subsection{Conway's Game of Life}
+
+Conway's Game of Life is an example of a \emph{cellular automaton}, which governs a two-dimensional grid of "cells" which are each in one of two states -- "dead", or "alive". As time passes in the grid, cells may be born or die according to the states of their neighbours -- specifically, an alive cell stays alive if two or three of its neighbours are alive; a dead cell comes to life if three of its neighbours are alive; under any other circumstance, a cell becomes (or stays) dead.
+
+Conway's Game of Life is not the only cellular automaton, but it is the most famous example, and most other two-dimensional CA's result in "boring" worlds. Conway's Game of Life, on the other hand, results in dynamic worlds with interesting properties, the explication of which is beyond the scope of this document.
+
+\subsection{Multiplayer}
+
+The concept of a Cellular Automaton may be cast into the milieu of a multiplayer game thus: cells have a dead state, and one "live" state for each player. After each time step, each player selects one cell to mutate; the world then resolves their mutations and executes the next time step according to the rules of the cellular automaton.
+
+A natural extension of Conway's Game of Life into a two-player game follows:
+
+\begin{itemize}
+	\item If a dead cell has three live neighbours, it changes to the state which is most represented among its live neighbours.
+	\item If a live cell has two live neighbours, and those neighbours are in the same state, it changes to the state of those neighbours.
+	\item If a live cell has two live neighbours, and those neighbours are in different states, the cell stays in its previous state.
+	\item If a live cell has three live neighbours, it changes to the state which is most represented among its live neighbours.
+	\item Under any other circumstance, a cell remains or becomes dead.
+\end{itemize}
+
+\section{Specification}
+
+\subsection{Gameplay}
+
+The gameplay, then, is rendered thus. The player may have the option of playing against another player, or else against a computer player. A board is drawn on-screen, measuring eight cells by eight cells, and twenty of these cells are coloured -- ten for each player, those of the player's chosen from the lower left-hand quadrant, and those of the opponent's chosen from the upper right-hand quadrant. The starting cells are selected in a manner such that the state of the board exhibits 180-degree rotational symmetry.
+
+At this point, the player clicks (or touches, for a touch-screen device) one cell of their choice. At the same time, their opponent does the same on their own device. Once both moves are submitted, the board is mutated thus:
+
+\begin{itemize}
+	\item If both players select the same cell, no mutation occurs
+	\item Otherwise, if a player selects one of their opponent's cells, that cell becomes dead.
+	\item Otherwise, if a player selects a dead cell, that cell becomes one of theirs.
+\end{itemize}
+
+After this mutation occurs, the game calculates the next world state according to the cellular automaton's rule, the updated game board is displayed to each player, and the players once again have a chance to select a cell.
+
+The game continues until either one of the players forfeits, or else one of the players has no more cells on the board. At that point, the other player is declared the winner.
+
+\subsection{Code}
+
+The majority of the project will be written in C++, using the SDL2 library for graphics, and using Lua scripts for certain dynamic elements, as expounded upon below.
+
+It is desirable that people should be able to play the game even without internet connectivity (i.e. with computer players); therefore we should construct our code such that as much as possible is localized. To this end, here is a trace of how the code flow should proceed:
+
+\begin{itemize}
+	\item The user is presented with a main menu, which offers at least an option between a computer opponent (local) or a human opponent (online).
+	\item Should the user choose a computer opponent:
+	\begin{itemize}
+		\item A thread is spawned which acts as a server, listening on a predefined port on the local machine.
+		\item Another thread is spawned which acts as the opponent. This thread accesses the opponent's strategy from a lua file in a predefined location.
+	\end{itemize}
+	\item Should the user choose a human opponent:
+	\begin{itemize}
+		\item The game attempts to connect to the game server using a to-be-determined URL.
+		\item If the attempt is successful, the server will match the player with another player (if any are available). Otherwise, an error message appears.
+	\end{itemize}
+	\item In either case, the main menu disappears, and a window is spawned which houses the game board. The game then proceeds.
+\end{itemize}
+
+\subsubsection{Scripting}
+
+There are two opportunities for Lua scripting in this project.
+
+The first is called an AI script. This script will consist of a function called move() which takes as parameter the current World state, and returns a choice of cell which will represent the computer player's move.
+
+The second is called a World script. This script will consist of a function called tick() which takes as an in-out parameter the current World state, and changes it to the next World state.
+
+The existence of these bits of logic as scripts allows users to customize their game experience. By changing the AI script, players can play against interesting opponents even when they are unable to find humans with whom to play. By changing the World script, players may discover and play different games within the basic framework we create.
+
+The game will come with defaults for each of these scripts; the default for the World state will implement the rules as explained above, and there may in fact be multiple default AI scripts, representing different difficulties.
+
+\section{Miscellaneous}
+
+\subsection{Wishlist}
+
+\begin{itemize}
+	\item There is no upper limit to how long a game may take, so some sort of save functionality may be desired.
+	\item Since we need a server anyway for human-vs-human gaming, it would be nice to create a website to serve as a repository for interesting AI scripts and World scripts.
+	\item It would be prudent to allow a non-game mode for experimentation (or artistic expression), which implements only a given World script and allows such functions as "pause", "step", "play", "back", and "reverse". To wit: "pause" would halt calculation of the World script and allow the user to change the states of multiple cells; "step" would advance the World state one step; "play" would advance the World state at a given (perhaps user-modifiable) rate; "back" would load the previous World state (if applicable), and "reverse" would rewind previously played states (again, if applicable). (Obviously "back" and "reverse" would only function if "step" or "play" had previously been selected; it is in the general case impossible to derive the previous World state given the current World state and the World script.)
+\end{itemize}
+
+\subsection{Concerns}
+
+\begin{itemize}
+	\item Multithreading and sockets may not be the most convenient way to implement a local game, although they're the most modular. (I.e., after setup, the code running the player's interfact doesn't know or care if the opponent and server are local to the machine, or elsewhere.)
+\end{itemize}
+
+\end{document}
