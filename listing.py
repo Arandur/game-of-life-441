@@ -7,9 +7,7 @@ import sys
 latex_file = """
 \\documentclass{{article}}
 
-\\usepackage{{subfiles}}
 \\usepackage{{fullpage}}
-\\usepackage{{caption}}
 \\usepackage[final]{{pdfpages}}
 \\usepackage{{lmodern}}
 \\usepackage{{color}}
@@ -17,8 +15,9 @@ latex_file = """
 \\usepackage{{fancyhdr}}
 \\pagestyle{{fancy}}
 
-\\lhead{{ J. Anthony Sterrett, Jr. // Andrew Brinker }}
-\\rhead{{ Operating Systems Lab {LABNO:d}; CSE-460 }}
+\\lhead{{ J. Anthony Sterrett, Jr. et al. }}
+\\chead{{Game of Life}}
+\\rhead{{ CSE-441, Spring 2014 }}
 \\renewcommand{{\\headsep}}{{25pt}}
 
 \\lstset{{
@@ -29,8 +28,8 @@ latex_file = """
   basicstyle=\\ttfamily\\footnotesize
 }}
 
-\\title{{ Operating Systems Lab {LABNO:d}; CSE-460 }}
-\\author{{ J. Anthony Sterrett, Jr. \\\\ Andrew Brinker }}
+\\title{{ Game of Life }}
+\\author{{ J. Anthony Sterrett, Jr. et al. }}
 \\date{{}}
 
 \\begin{{document}}
@@ -57,7 +56,6 @@ listing_line = """\\lstinputlisting[title={FILENAME}]{{{FILEPATH}}}
 bin_name = ""
 
 def make_listing():
-  d = int( raw_input( "Enter lab number: " ) )
   listings = ""
   headers = {}
   sources = {}
@@ -95,7 +93,7 @@ def make_listing():
     listings += listing_line.format( FILENAME = s, FILEPATH = sources[s] )
 
   with open( "{}.tex".format( bin_name ), "w" ) as f: 
-    f.write( latex_file.format( LABNO = d, LISTINGS = listings ) )  
+    f.write( latex_file.format( LISTINGS = listings ) )  
 
 if __name__ == "__main__":
   bin_name = sys.argv[1]

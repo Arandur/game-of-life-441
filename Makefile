@@ -162,12 +162,12 @@ clean:
 	@echo "Deleting directories"
 	@$(RM) -r build
 	@$(RM) -r bin
-	@$(RM) srs/*.aux
-	@$(RM) srs/*.log
-	@$(RM) srs/*.synctex.gz
-	@$(RM) srs/*.pdf
-	@$(RM) *.tex
-	@$(RM) *.pdf
+	@echo "Deleting code listing"
+	@$(RM) $(BIN_NAME).tex
+	@$(RM) $(BIN_NAME).pdf
+	@$(RM) srs/srs.aux
+	@$(RM) srs/srs.log
+	@$(RM) srs/srs.synctex.gz
 
 # target: help        List available targets
 .PHONY: help
