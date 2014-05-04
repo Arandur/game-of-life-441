@@ -162,10 +162,10 @@ clean:
 	@echo "Deleting directories"
 	@$(RM) -r build
 	@$(RM) -r bin
-	@$(RM) test/*.o
-	@$(RM) test/*.out
-	@$(RM) test/*.log
-	@$(RM) test/*.st
+	@$(RM) srs/*.aux
+	@$(RM) srs/*.log
+	@$(RM) srs/*.synctex.gz
+	@$(RM) srs/*.pdf
 	@$(RM) *.tex
 	@$(RM) *.pdf
 
