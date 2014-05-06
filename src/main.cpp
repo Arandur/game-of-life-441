@@ -1,10 +1,11 @@
 #include <iostream>
+#include <string>
 
-#include <Player/Player.h>
+#include <HumanPlayer/HumanPlayer.h>
 
 int main() {
-  Player p;
-  std::cout << "Hello, world!" << std::endl;
+  HumanPlayer hp;
+  hp.play();
 
   return 0;
 }

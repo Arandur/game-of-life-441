@@ -47,14 +47,13 @@ const Color_t CLEAR{   0,   0,   0, 255 };
 class Screen :
   public Brain {
 public:
-  Screen( Grid&, void (&)() );
+  Screen( Grid& );
   ~Screen();
 
   virtual Maybe< GridCoordinates > getMove();
 
 private:
   using Brain::grid;
-  using Brain::quit_callback;
   std::unique_ptr< SDL_Window, void(*)( SDL_Window* ) > window;
   std::unique_ptr< SDL_Renderer, void(*)( SDL_Renderer* ) > renderer;
 

@@ -23,8 +23,8 @@ auto make_renderer( Arguments&&... args ) {
                         std::forward< Arguments >( args )... );
 }
 
-Screen::Screen( Grid& g, void (&q)() ) try :
-  Brain( g, q ),
+Screen::Screen( Grid& g ) try :
+  Brain( g ),
   window( make_window( "Game of Life", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT,
                        SDL_WINDOW_SHOWN ) ),
   renderer( make_renderer( window.get(), -1,
@@ -35,6 +35,8 @@ Screen::Screen( Grid& g, void (&q)() ) try :
 
   if( !renderer )
     throw std::runtime_error( "Could not create renderer" );
+
+  render();
 } catch( std::exception& e ) {
   SDL_Quit();
   throw e;
@@ -53,7 +55,6 @@ Maybe< GridCoordinates > Screen::getMove() {
   while( SDL_PollEvent( &event ) ) {
     switch( event.type ) {
     case SDL_QUIT:
-      quit_callback();
       return nullptr;
       break;
     case SDL_MOUSEBUTTONDOWN:
@@ -94,10 +95,13 @@ void Screen::setRenderDrawColor( colors::Color_t color ) {
 }
 
 void Screen::render() {
+  SDL_RenderClear( renderer.get() );
   setRenderDrawColor( colors::WHITE );
   SDL_RenderFillRect( renderer.get(), nullptr );
 
   render_grid();
+
+  SDL_RenderPresent( renderer.get() );
 }
 
 void Screen::render_grid() {

@@ -2,14 +2,35 @@
 
 #include <Client/Client.h>
 #include <Grid/Grid.h>
+#include <Brain/Brain.h>
+#include <util/Maybe.h>
 
+#include <type_traits>
+
+#include <iostream>
+
+template < class B >
 class Player :
-  public Client {
+  public Client, public std::enable_if< std::is_base_of< Brain, B >::value, B >::type {
 public:
-  Player();
+  using B::getMove;
 
-  void play();
+  Player< B >() :
+    B( grid ) {}
 
-private:
+  void play() {
+    GridCoordinates gc;
+    Maybe< GridCoordinates > mgc = getMove();
+    if( mgc ) {
+      gc = fromJust( mgc );
+      std::cout << (int)gc.x << ", " << (int)gc.y << std::endl;
+    } else forfeit();
+  }
+
+protected:
   Grid grid;
+
+  void forfeit() {
+
+  }
 };

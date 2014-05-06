@@ -4,10 +4,12 @@
 #include <Coordinates/Coordinates.h>
 #include <util/Maybe.h>
 
+#include <functional>
+
 class Brain {
 public:
-  Brain( Grid& g, void (&q)() ) :
-    grid( g ), quit_callback( q )
+  Brain( Grid& g ) :
+    grid( g )
   {}
   virtual ~Brain() = default;
 
@@ -15,5 +17,4 @@ public:
 
 protected:
   Grid& grid;
-  void (&quit_callback)();
 };
