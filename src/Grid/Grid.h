@@ -1,11 +1,13 @@
 #pragma once
 
 #include <cstdint>
+#include <array>
 
 #include <Coordinates/Coordinates.h>
 
 #define GRID_HEIGHT 8
 #define GRID_WIDTH  8
+#define GRID_SIZE   ( GRID_HEIGHT * GRID_WIDTH )
 
 enum class PlayerNumber {
   ONE,
@@ -22,14 +24,15 @@ public:
 
   const char* get_string_representation() const;
 
-  const uint8_t (*grid)[GRID_HEIGHT] = cells_a;
-
   bool operator == ( const Grid& ) const;
 
+  const uint8_t* operator [] ( uint8_t ) const;
+
 private:
-  uint8_t (*grid_reserve)[GRID_HEIGHT] = cells_b;
-  uint8_t cells_a[GRID_HEIGHT][GRID_WIDTH];
-  uint8_t cells_b[GRID_HEIGHT][GRID_WIDTH];
+  std::array< uint8_t, GRID_SIZE >& grid = cells_a;
+  std::array< uint8_t, GRID_SIZE >& grid_reserve = cells_b;
+  std::array< uint8_t, GRID_SIZE >  cells_a;
+  std::array< uint8_t, GRID_SIZE >  cells_b;
 
   void flip();
 };

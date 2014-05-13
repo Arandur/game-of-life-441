@@ -10,7 +10,7 @@ HEADER_EXT = h
 # Path to the source directory, relative to the makefile
 SRC_PATH = src
 # General compiler flags
-COMPILE_FLAGS = -std=c++1y -Wall -Wextra -g -pedantic -fdiagnostics-color=always
+COMPILE_FLAGS = -std=c++1y -Wall -Wextra -g -pedantic -fdiagnostics-color=always -pthread
 # Additional release-specific flags
 RCOMPILE_FLAGS = -D NDEBUG
 # Additional debug-specific flags

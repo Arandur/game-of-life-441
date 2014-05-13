@@ -47,7 +47,7 @@ const Color_t CLEAR{   0,   0,   0, 255 };
 class Screen :
   public Brain {
 public:
-  Screen( Grid& );
+  Screen();
   ~Screen();
 
   virtual Maybe< GridCoordinates > getMove();

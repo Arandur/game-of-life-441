@@ -15,8 +15,7 @@ class Player :
 public:
   using B::getMove;
 
-  Player< B >() :
-    B( grid ) {}
+  Player< B >() = default;
 
   void play() {
     GridCoordinates gc;
@@ -28,8 +27,6 @@ public:
   }
 
 protected:
-  Grid grid;
-
   void forfeit() {
 
   }

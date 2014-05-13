@@ -23,8 +23,7 @@ auto make_renderer( Arguments&&... args ) {
                         std::forward< Arguments >( args )... );
 }
 
-Screen::Screen( Grid& g ) try :
-  Brain( g ),
+Screen::Screen() try :
   window( make_window( "Game of Life", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT,
                        SDL_WINDOW_SHOWN ) ),
   renderer( make_renderer( window.get(), -1,
@@ -82,8 +81,8 @@ SDL_Rect Screen::makeRectFromGC( uint8_t x, uint8_t y ) {
 }
 
 GridCoordinates Screen::GCfromSC( int x, int y ) {
-  return { x * GRID_WIDTH  / SCREEN_WIDTH,
-           y * GRID_HEIGHT / SCREEN_HEIGHT };
+  return { static_cast< uint8_t >( x * GRID_WIDTH  / SCREEN_WIDTH  ),
+           static_cast< uint8_t >( y * GRID_HEIGHT / SCREEN_HEIGHT ) };
 }
 
 void Screen::setRenderDrawColor( colors::Color_t color ) {
@@ -108,7 +107,7 @@ void Screen::render_grid() {
   SDL_Rect rect;
   for( uint8_t x = 0; x < GRID_HEIGHT; ++x )
   for( uint8_t y = 0; y < GRID_WIDTH ; ++y ) {
-    setRenderDrawColor( color_map[ grid.grid[x][y] ] );
+    setRenderDrawColor( color_map[ grid[x][y] ] );
     rect = makeRectFromGC( x, y );
     SDL_RenderFillRect( renderer.get(), &rect );
   }

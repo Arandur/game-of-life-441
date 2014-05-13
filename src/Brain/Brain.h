@@ -4,17 +4,13 @@
 #include <Coordinates/Coordinates.h>
 #include <util/Maybe.h>
 
-#include <functional>
-
 class Brain {
 public:
-  Brain( Grid& g ) :
-    grid( g )
-  {}
+  Brain() = default;
   virtual ~Brain() = default;
 
   virtual Maybe< GridCoordinates > getMove() = 0;
 
 protected:
-  Grid& grid;
+  Grid grid;
 };
