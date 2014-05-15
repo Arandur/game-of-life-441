@@ -18,10 +18,38 @@ Grid::Grid( const char (&str) [ GRID_SIZE + 1 ] ) :
   uint8_t n_zeroes = std::count_if( std::begin( str ), std::end( str ), [] ( const char& c ) -> bool {
     return c == 0;
   } );
-  std::copy_n( &str[1], GRID_SIZE, std::begin( cells_a ) );
 
   if( n_zeroes != str[0] )
     throw std::runtime_error( "Invalid Grid" );
+
+  std::copy_n( &str[1], GRID_SIZE, std::begin( grid ) );
+}
+
+Grid& Grid::operator = ( const Grid& g ) {
+  cells_a = g.cells_a;
+  cells_b = g.cells_b;
+  if( g.grid == g.cells_a ) {
+    grid = cells_a;
+    grid_reserve = cells_b;
+  } else {
+    grid = cells_b;
+    grid_reserve = cells_a;
+  }
+
+  return *this;
+}
+
+Grid& Grid::operator = ( const char (&str) [ GRID_SIZE + 1 ] ) {
+  uint8_t n_zeroes = std::count_if( std::begin( str ), std::end( str ), [] ( const char& c ) -> bool {
+    return c == 0;
+  } );
+
+  if( n_zeroes != str[0] )
+    throw std::runtime_error( "Invalid Grid" );
+
+  std::copy_n( &str[1], GRID_SIZE, std::begin( grid ) );
+
+  return *this;
 }
 
 void Grid::setCell( GridCoordinates gc, PlayerNumber p ) {

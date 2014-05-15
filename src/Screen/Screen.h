@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Brain/Brain.h>
+#include <Grid/Grid.h>
 
 #include "SDL2/SDL.h"
 
@@ -52,8 +53,10 @@ public:
 
   virtual Maybe< GridCoordinates > getMove();
 
+protected:
+  Grid grid;
+
 private:
-  using Brain::grid;
   std::unique_ptr< SDL_Window, void(*)( SDL_Window* ) > window;
   std::unique_ptr< SDL_Renderer, void(*)( SDL_Renderer* ) > renderer;
 

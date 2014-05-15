@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Player/Player.h>
+#include <Player/Player.hpp>
 #include <Screen/Screen.h>
 
 class HumanPlayer :
@@ -9,7 +9,4 @@ public:
   HumanPlayer() :
     Player()
   {}
-
-private:
-
 };

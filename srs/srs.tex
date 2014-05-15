@@ -44,9 +44,9 @@ A natural extension of Conway's Game of Life into a two-player game follows:
 
 \subsection{Gameplay}
 
-The gameplay, then, is rendered thus. A board is drawn on-screen, measuring eight cells by eight cells, and twenty of these cells are coloured -- ten for each player, those of the player's chosen from the lower left-hand quadrant, and those of the opponent's chosen from the upper right-hand quadrant. The starting cells are selected in a manner such that the state of the board exhibits 180-degree rotational symmetry.
+The gameplay, then, is rendered thus. A board is drawn on-screen, measuring eight cells by eight cells, and twenty of these cells are coloured -- ten for each player, those of the player's chosen from the lower left-hand quadrant, and those of the opponent's chosen from the upper right-hand quadrant. The starting cells are selected in a manner such that the state of the board exhibits 180-degree rotational symmetry -- this is done for the sake of fairness.
 
-At this point, the player clicks (or touches, for a touch-screen device) one cell of their choice. At the same time, their opponent -- run by a computer script -- selects a cell as their move. Once both moves are submitted, the board is mutated thus:
+At this point, the player clicks one cell of their choice. At the same time, their opponent -- run by a computer script -- selects a cell as their move. Once both moves are submitted, the board is mutated thus:
 
 \begin{itemize}
 	\item If both players select the same cell, no mutation occurs
@@ -80,6 +80,8 @@ The second is called a World script. This script will consist of a function call
 The existence of these bits of logic as scripts allows users to customize their game experience. By changing the AI script, players can play against interesting opponents, and discover new strategies. By changing the World script, players may discover and play different games within the basic framework we create.
 
 The game will come with defaults for each of these scripts; the default for the World state will implement the rules as explained above, and there may in fact be multiple default AI scripts, representing different difficulties.
+
+There is also the possiblity that the drawing logic could be ported to Lua, with C++ providing a simple API wrapper for SDL2.
 
 \section{Miscellaneous}
 
