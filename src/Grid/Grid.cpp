@@ -54,8 +54,8 @@ Grid& Grid::operator = ( const char (&str) [ GRID_SIZE + 1 ] ) {
 
 void Grid::setCell( GridCoordinates gc, PlayerNumber p ) {
 #ifdef DEBUG
-  assert( 0 <= x and x < GRID_HEIGHT and
-          0 <= y and y < GRID_WIDTH );
+  assert( gc.x < GRID_HEIGHT and
+          gc.y < GRID_WIDTH );
 #endif  // DEBUG
   uint8_t& cell = grid[ GRID_WIDTH * gc.x + gc.y ];
   switch( p ) {

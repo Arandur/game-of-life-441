@@ -1,9 +1,9 @@
-#include <iostream>
-
 #include <Server/Server.h>
 #include <HumanPlayer/HumanPlayer.h>
 #include <ComputerPlayer/ComputerPlayer.h>
 #include <thread>
+
+#include <cstdio>
 
 int main() {
   std::thread server_thread( &Server::run, new Server );
@@ -12,6 +12,7 @@ int main() {
 
   server_thread.detach();
   human_thread.join();
+  puts( "human_thread has joined!" );
   computer_thread.join();
 
   return 0;

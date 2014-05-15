@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Grid/Grid.h>
+#include <util/message.h>
 
 #include <unistd.h>
 #include <thread>
@@ -12,12 +13,12 @@ class Game {
 public:
   Game() = delete;
   Game( int fd1, int fd2 ) :
-    p_one_fd( fd1 ), p_two_fd( fd2 ),
-    p_one_handler( &Game::watch, this, p_one_fd ),
-    p_two_handler( &Game::watch, this, p_two_fd )
+    p_one_fd( fd1 ), p_two_fd( fd2 )//,
+    //p_one_handler( &Game::watch, this, p_one_fd ),
+    //p_two_handler( &Game::watch, this, p_two_fd )
   {
-    p_one_handler.detach();
-    p_two_handler.detach();
+    //p_one_handler.detach();
+    //p_two_handler.detach();
 
     grid_init();
   }

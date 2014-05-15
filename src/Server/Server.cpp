@@ -75,6 +75,9 @@ Server::Server() {
 }
 
 void Server::run() {
+#ifdef DEBUG
+  puts ( "Server run!" );
+#endif  // DEBUG
   Game* new_game;
   std::string new_game_addr;
   int new_fd, p_one_fd, p_two_fd;
@@ -92,12 +95,18 @@ void Server::run() {
     }
 
     if( ! have_first_player ) {
+#ifdef DEBUG
+      puts( "Got first player!" );
+#endif  // DEBUG
       p_one_fd = new_fd;
       inet_ntop( their_addr.ss_family,
                  get_in_addr( ( struct sockaddr* )( &their_addr ) ),
                  s, sizeof s );
       have_first_player = true;
     } else {
+#ifdef DEBUG
+      puts( "Got second player!" );
+#endif  // DEBUG
       p_two_fd = new_fd;
       inet_ntop( their_addr.ss_family,
                  get_in_addr( ( struct sockaddr* )( &their_addr ) ),

@@ -1,4 +1,5 @@
 #include "./Game.h"
+#include <util/message.h>
 
 #include <cstddef>
 #include <cstdio>
@@ -16,8 +17,14 @@
 #define N_STARTING_CELLS 10
 
 void Game::run() {
+#ifdef DEBUG
+  puts( "Game run!" );
+#endif  // DEBUG
   send_state( p_one_fd );
   send_state( p_two_fd );
+#ifdef DEBUG
+  puts( "Sent state!" );
+#endif  // DEBUG
   while( running ) {
     jobs_mutex.lock();
     if( ! jobs.empty() ) {
@@ -51,25 +58,48 @@ void Game::grid_init() {
 
 void Game::watch( int fd ) {
   int rv;
+  bool get = false;
 
   while( true ) {
-    buffer_mutex.lock();
-    rv = recv( fd, buffer, 256, 0 );
-    if( rv == 0 ) {
-      jobs_mutex.lock();
-      jobs.push( std::bind( &Game::end, this ) );
-      jobs_mutex.unlock();
-    } else if( rv < 0 ) {
-      perror( "recv" );
-    } else {
-      
+    jobs_mutex.lock();
+    get = jobs.empty();
+    jobs_mutex.unlock();
+
+    if( get ) {
+      buffer_mutex.lock();
+      rv = recv( fd, buffer, 256, 0 );
+      if( rv == 0 ) {
+        jobs_mutex.lock();
+        jobs.push( std::bind( &Game::end, this ) );
+        jobs_mutex.unlock();
+      } else if( rv < 0 ) {
+        perror( "recv" );
+      } else {
+        if( is_forfeit( buffer ) ) {
+#ifdef DEBUG
+          puts( "Received forfeit!" );
+#endif  // DEBUG
+          jobs_mutex.lock();
+          jobs.push( std::bind( &Game::end, this ) );
+          jobs_mutex.unlock();
+        } else if( is_move( buffer ) ) {
+          // Register move
+        } else if( is_query( buffer ) ) {
+          jobs_mutex.lock();
+          jobs.push( std::bind( &Game::send_state, this, fd ) );
+          jobs_mutex.unlock();
+        }
+      }
+      buffer_mutex.unlock();
     }
-    buffer_mutex.unlock();
   }
 }
 
 void Game::send_state( int fd ) {
-  send( fd, grid.get_string_representation(), GRID_SIZE + 1, 0 );
+  buffer_mutex.lock();
+  make_grid( buffer, grid );
+  send( fd, buffer, 256, 0 );
+  buffer_mutex.unlock();
 }
 
 void Game::end() {
