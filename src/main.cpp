@@ -1,18 +1,19 @@
 #include <Server/Server.h>
 #include <HumanPlayer/HumanPlayer.h>
 #include <ComputerPlayer/ComputerPlayer.h>
-#include <thread>
 
+#include <thread>
+#include <chrono>
 #include <cstdio>
 
 int main() {
   std::thread server_thread( &Server::run, new Server );
   std::thread human_thread( &HumanPlayer::play, new HumanPlayer );
+  std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
   std::thread computer_thread( &ComputerPlayer::play, new ComputerPlayer );
 
   server_thread.detach();
   human_thread.join();
-  puts( "human_thread has joined!" );
   computer_thread.join();
 
   return 0;

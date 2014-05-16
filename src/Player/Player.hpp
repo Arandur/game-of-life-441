@@ -21,9 +21,6 @@ public:
   Player< B >() = default;
 
   void play() {
-#ifdef DEBUG
-    puts( "Play!" );
-#endif  // DEBUG
     GridCoordinates gc;
     Maybe< GridCoordinates > mgc;
     bool game = true;
@@ -34,18 +31,18 @@ public:
     while( game ) {
       receive( msg );
 #ifdef DEBUG
-      puts( "Received!" );
+      puts( "Received message from game" );
 #endif  // DEBUG
 
       if( is_grid( msg ) ) {
         // This should be changed to effect a transition animation.
 #ifdef DEBUG
-        puts ( "Grid!" );
+        puts( "Message is grid" );
 #endif  // DEBUG
         grid = get_grid( msg );
       } else if( is_end( msg ) ) {
 #ifdef DEBUG
-        puts( "Game should be ending!" );
+        puts( "Message is end" );
 #endif  // DEBUG
         game = false;
       } else throw std::runtime_error( msg );  // Just for now
@@ -54,19 +51,18 @@ public:
       if( mgc ) {
         gc = fromJust( mgc );
         make_move( msg, gc );
+#ifdef DEBUG
+        printf( "( %d, %d )\n", gc.x, gc.y );
+#endif  // DEBUG
         send( msg );
       } else {
 #ifdef DEBUG
-        puts( "Player sent forfeit!" );
+        puts( "Player is sending forfeit..." );
 #endif  // DEBUG
         forfeit();
         game = false;
       }
     }
-
-#ifdef DEBUG
-    puts( "Player::play is done!" );
-#endif  // DEBUG
   }
 
 private:

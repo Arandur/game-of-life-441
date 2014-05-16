@@ -19,8 +19,9 @@ Grid::Grid( const char (&str) [ GRID_SIZE + 1 ] ) :
     return c == 0;
   } );
 
-  if( n_zeroes != str[0] )
-    throw std::runtime_error( "Invalid Grid" );
+  if( n_zeroes != str[0] ) {
+    puts( "Invalid grid..." );
+  }
 
   std::copy_n( &str[1], GRID_SIZE, std::begin( grid ) );
 }
@@ -40,7 +41,8 @@ Grid& Grid::operator = ( const Grid& g ) {
 }
 
 Grid& Grid::operator = ( const char (&str) [ GRID_SIZE + 1 ] ) {
-  uint8_t n_zeroes = std::count_if( std::begin( str ), std::end( str ), [] ( const char& c ) -> bool {
+  uint8_t n_zeroes = std::count_if( std::begin( str ), std::end( str ),
+                                    [] ( const char& c ) -> bool {
     return c == 0;
   } );
 

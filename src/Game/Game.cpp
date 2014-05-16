@@ -23,15 +23,26 @@ void Game::run() {
   send_state( p_one_fd );
   send_state( p_two_fd );
 #ifdef DEBUG
-  puts( "Sent state!" );
+  puts( "Game sent state to players" );
 #endif  // DEBUG
+
   while( running ) {
-    jobs_mutex.lock();
-    if( ! jobs.empty() ) {
-      jobs.front()();
-      jobs.pop();
+    getCommand( p_one_fd )();
+    getCommand( p_two_fd )();
+
+    if( p_one_move and p_two_move ) {
+      grid.setCell( fromJust( p_one_move ), PlayerNumber::ONE );
+      grid.setCell( fromJust( p_two_move ), PlayerNumber::TWO );
+
+#ifdef DEBUG
+      puts( "Sending state to players..." );
+#endif  // DEBUG
+      send_state( p_one_fd );
+      send_state( p_two_fd );
+
+      p_one_move = nullptr;
+      p_two_move = nullptr;
     }
-    jobs_mutex.unlock();
   }
 }
 
@@ -56,53 +67,66 @@ void Game::grid_init() {
   }
 }
 
-void Game::watch( int fd ) {
-  int rv;
-  bool get = false;
+std::function< void() > Game::getCommand( int fd ) {
+  int rv = recv( fd, buffer, 256, 0 );
 
-  while( true ) {
-    jobs_mutex.lock();
-    get = jobs.empty();
-    jobs_mutex.unlock();
-
-    if( get ) {
-      buffer_mutex.lock();
-      rv = recv( fd, buffer, 256, 0 );
-      if( rv == 0 ) {
-        jobs_mutex.lock();
-        jobs.push( std::bind( &Game::end, this ) );
-        jobs_mutex.unlock();
-      } else if( rv < 0 ) {
-        perror( "recv" );
-      } else {
-        if( is_forfeit( buffer ) ) {
+  if( rv == 0 ) {
 #ifdef DEBUG
-          puts( "Received forfeit!" );
+    printf( "Game lost connection from player %d\n",
+            ( fd == p_one_fd ) ? 1 : 2 );
 #endif  // DEBUG
-          jobs_mutex.lock();
-          jobs.push( std::bind( &Game::end, this ) );
-          jobs_mutex.unlock();
-        } else if( is_move( buffer ) ) {
-          // Register move
-        } else if( is_query( buffer ) ) {
-          jobs_mutex.lock();
-          jobs.push( std::bind( &Game::send_state, this, fd ) );
-          jobs_mutex.unlock();
-        }
-      }
-      buffer_mutex.unlock();
+    return std::bind( &Game::end, this );
+  } else if( rv < 0 ) {
+    perror( "recv" );
+    return std::bind( &Game::end, this );
+  } else {
+    if( is_forfeit( buffer ) ) {
+#ifdef DEBUG
+      printf( "Game received forfeit from player %d\n",
+              ( fd == p_one_fd ) ? 1 : 2 );
+#endif  // DEBUG
+      return std::bind( &Game::end, this );
+    } else if( is_move( buffer ) ) {
+#ifdef DEBUG
+      printf( "Game received move from player %d\n",
+              ( fd == p_one_fd ) ? 1 : 2 );
+#endif  // DEBUG
+      if( fd == p_one_fd )
+        p_one_move = Just( get_move( buffer ) );
+      else
+        p_two_move = Just( get_move( buffer ) );
+      return [] {};
+    } else if( is_query( buffer ) ) {
+#ifdef DEBUG
+      printf( "Game received query from player %d\n",
+              ( fd == p_one_fd ) ? 1 : 2 );
+#endif  // DEBUG
+      return std::bind( &Game::send_state, this, fd );
     }
   }
+
+#ifdef DEBUG
+  printf( "Game received bad command from player %d\n",
+              ( fd == p_one_fd ) ? 1 : 2 );
+  for( char c : buffer ) {
+    if( c < 3 )
+      printf( "%d", static_cast< int >( c ) );
+    else
+      putchar( c );
+  }
+    puts( "" );
+#endif  // DEBUG
+
+  return [] {};
 }
 
 void Game::send_state( int fd ) {
-  buffer_mutex.lock();
   make_grid( buffer, grid );
   send( fd, buffer, 256, 0 );
-  buffer_mutex.unlock();
 }
 
 void Game::end() {
-  send( p_one_fd, "End", 3, 0 );
-  send( p_two_fd, "End", 3, 0 );
+  make_end( buffer );
+  send( p_one_fd, buffer, 256, 0 );
+  send( p_two_fd, buffer, 256, 0 );
 }

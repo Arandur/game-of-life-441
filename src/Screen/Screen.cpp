@@ -66,10 +66,6 @@ Maybe< GridCoordinates > Screen::getMove() {
       return nullptr;
       break;
     case SDL_MOUSEBUTTONDOWN:
-#ifdef DEBUG
-      printf( "( %d, %d )\n", GCfromSC( event.button.x, event.button.y ).x,
-                              GCfromSC( event.button.x, event.button.y ).y );
-#endif  // DEBUG
       return Just( GCfromSC( event.button.x, event.button.y ) );
       break;
     default:
@@ -99,15 +95,6 @@ GridCoordinates Screen::GCfromSC( int x, int y ) {
 }
 
 void Screen::setRenderDrawColor( colors::Color_t color ) {
-#ifdef DEBUG
-  if( color == colors::GRAY ) {
-      puts( "Gray!" );
-    } else if( color == colors::RED ) {
-      puts( "Red!" );
-    } else if( color == colors::BLUE ) {
-      puts( "Blue!" );
-    } else puts( "???" );
-#endif  // DEBUG
   if( SDL_SetRenderDrawColor( renderer.get(), color.red,
                                               color.green,
                                               color.blue,
@@ -116,27 +103,6 @@ void Screen::setRenderDrawColor( colors::Color_t color ) {
 }
 
 void Screen::render() {
-#ifdef DEBUG
-  for( uint8_t x = 0; x < GRID_WIDTH;  ++x ) {
-    for( uint8_t y = 0; y < GRID_HEIGHT; ++y ) {
-      switch( grid[x][y] ) {
-      case 0x00 :
-        putchar( ' ' );
-        break;
-      case 0x01 :
-        putchar( 'a' );
-        break;
-      case 0x02 :
-        putchar( 'b' );
-        break;
-      default :
-        putchar( 'x' );
-        break;
-      }
-    }
-    puts( "" );
-  }
-#endif  // DEBUG
   SDL_RenderClear( renderer.get() );
   setRenderDrawColor( colors::WHITE );
   SDL_RenderFillRect( renderer.get(), nullptr );
@@ -148,13 +114,11 @@ void Screen::render() {
 
 void Screen::render_grid() {
   SDL_Rect rect;
-  for( uint8_t x = 0; x < GRID_HEIGHT; ++x )
-  for( uint8_t y = 0; y < GRID_WIDTH ; ++y ) {
-    setRenderDrawColor( color_map[ grid[x][y] ] );
-    rect = makeRectFromGC( x, y );
-#ifdef DEBUG
-    printf( "Rect: ( %d, %d, %d, %d )\n", rect.x, rect.y, rect.w, rect.h );
-#endif  // DEBUG
-    SDL_RenderFillRect( renderer.get(), &rect );
+  for( uint8_t x = 0; x < GRID_HEIGHT; ++x ) {
+    for( uint8_t y = 0; y < GRID_WIDTH ; ++y ) {
+      setRenderDrawColor( color_map[ grid[x][y] ] );
+      rect = makeRectFromGC( x, y );
+      SDL_RenderFillRect( renderer.get(), &rect );
+    }
   }
 }
