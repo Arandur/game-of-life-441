@@ -58,7 +58,8 @@ protected:
 
 private:
   std::unique_ptr< SDL_Window, void(*)( SDL_Window* ) > window;
-  std::unique_ptr< SDL_Renderer, void(*)( SDL_Renderer* ) > renderer;
+  //std::unique_ptr< SDL_Renderer, void(*)( SDL_Renderer* ) > renderer;
+  SDL_Renderer* renderer;
 
   colors::Color_t color_map[3] = { colors::GRAY,
                                    colors::BLUE,

@@ -17,10 +17,12 @@ enum class PlayerNumber {
 class Grid {
 public:
   Grid();
-  Grid( const char(&) [ GRID_SIZE + 1 ] );
+  Grid( const char(&) [ GRID_SIZE + 2 ] );
 
   Grid& operator = ( const Grid& );
-  Grid& operator = ( const char(&) [ GRID_SIZE + 1 ] );
+  Grid& operator = ( const char(&) [ GRID_SIZE + 2 ] );
+
+  uint8_t count_cells( PlayerNumber ) const;
 
   void setCell( GridCoordinates, PlayerNumber );
   void tick();

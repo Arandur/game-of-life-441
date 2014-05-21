@@ -12,16 +12,17 @@ Grid::Grid() :
   std::fill( std::begin( cells_a ), std::end( cells_a ), 0 );
 }
 
-Grid::Grid( const char (&str) [ GRID_SIZE + 1 ] ) :
+Grid::Grid( const char (&str) [ GRID_SIZE + 2 ] ) :
   grid( cells_a ),
   grid_reserve( cells_b ) {
-  uint8_t n_zeroes = std::count_if( std::begin( str ), std::end( str ), [] ( const char& c ) -> bool {
-    return c == 0;
-  } );
-
+#ifdef DEBUG
+  uint8_t n_zeroes = std::count_if( std::begin( str ), std::end( str ),
+                                    [] ( const char& c ) -> bool {
+                                      return c == 0; } );
   if( n_zeroes != str[0] ) {
     puts( "Invalid grid..." );
   }
+#endif  // DEBUG
 
   std::copy_n( &str[1], GRID_SIZE, std::begin( grid ) );
 }
@@ -40,18 +41,36 @@ Grid& Grid::operator = ( const Grid& g ) {
   return *this;
 }
 
-Grid& Grid::operator = ( const char (&str) [ GRID_SIZE + 1 ] ) {
+Grid& Grid::operator = ( const char (&str) [ GRID_SIZE + 2 ] ) {
+#ifdef DEBUG
   uint8_t n_zeroes = std::count_if( std::begin( str ), std::end( str ),
                                     [] ( const char& c ) -> bool {
-    return c == 0;
-  } );
+                                      return c == 0; } );
 
   if( n_zeroes != str[0] )
     throw std::runtime_error( "Invalid Grid" );
+#endif  // DEBUG
 
   std::copy_n( &str[1], GRID_SIZE, std::begin( grid ) );
 
   return *this;
+}
+
+uint8_t Grid::count_cells( PlayerNumber p ) const {
+  uint8_t value;
+  switch( p ) {
+    case PlayerNumber::ONE:
+      value = 1;
+      break;
+    case PlayerNumber::TWO:
+      value = 2;
+      break;
+  }
+
+  return std::count_if( std::begin( grid ), std::end( grid ),
+                        [&] ( const uint8_t i ) -> bool {
+                          return i == value;
+                        } );
 }
 
 void Grid::setCell( GridCoordinates gc, PlayerNumber p ) {
@@ -111,13 +130,20 @@ void Grid::tick() {
 }
 
 const char* Grid::get_string_representation() const {
-  static char str[ GRID_SIZE + 1 ];
-  uint8_t n_zeroes = std::count_if( std::begin( grid ), std::end( grid ), [] ( uint8_t i ) -> bool {
-    return i == 0;
-  } );
+  static char str[ GRID_SIZE + 2 ];
+  uint8_t n_zeroes = std::count_if( std::begin( grid ), std::end( grid ),
+                                    [] ( uint8_t i ) -> bool {
+                                      return i == 0; } );
 
   std::copy_n( std::begin( grid ), GRID_SIZE, std::begin( str ) + 1 );
 
+#ifdef DEBUG
+  if( std::equal( std::begin( grid ), std::end( grid ),
+                  std::begin( str ) + 1 ) == false ) {
+    puts( "Grid representation failure." );
+  }
+#endif  // DEBUG
+  
   str[0] = n_zeroes;
 
   return str;
@@ -129,7 +155,8 @@ bool Grid::operator == ( const Grid& g ) const {
 
 const uint8_t* Grid::operator [] ( uint8_t i ) const {
   static uint8_t row[GRID_WIDTH];
-  std::copy_n( std::begin( grid ) + GRID_WIDTH * i, GRID_WIDTH, std::begin( row ) );
+  std::copy_n( std::begin( grid ) + GRID_WIDTH * i, GRID_WIDTH,
+               std::begin( row ) );
   return row;
 }
 

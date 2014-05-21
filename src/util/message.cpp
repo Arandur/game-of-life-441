@@ -1,5 +1,9 @@
 #include "./message.h"
 
+#ifdef DEBUG
+#include <sstream>
+#endif  // DEBUG
+
 bool has_prefix( char (&arr)[256], const char* str ) {
   char* p = &arr[0];
   while( *str )
@@ -9,8 +13,8 @@ bool has_prefix( char (&arr)[256], const char* str ) {
 }
 
 Grid get_grid( char (&arr)[256] ) {
-  char grid[ GRID_SIZE + 1 ];
-  memcpy( grid, &arr[4], GRID_SIZE + 1 );
+  char grid[ GRID_SIZE + 2 ];
+  memcpy( grid, &arr[4], GRID_SIZE + 2 );
   return Grid( grid );
 }
 
@@ -61,3 +65,22 @@ bool is_forfeit( char (&arr)[256] ) {
 bool is_end( char (&arr)[256] ) {
   return has_prefix( arr, "End" );
 }
+
+#ifdef DEBUG
+void print_grid( char (&arr)[256] ) {
+  std::stringstream ss;
+  ss << static_cast< int >( arr[4] ) << '\n';
+  for( int i = 0; i < GRID_WIDTH; ++i ) {
+    for( int j = 0; j < GRID_HEIGHT; ++j ) {
+      ss << static_cast< int >( arr[ 5 + GRID_WIDTH * i + j ] );
+    }
+    ss << '\n';
+  }
+
+  printf( "%s", ss.str().c_str() );
+}
+
+void print_move( char (&arr)[256] ) {
+  printf( "( %d, %d )\n", arr[4], arr[5] );
+}
+#endif  // DEBUG

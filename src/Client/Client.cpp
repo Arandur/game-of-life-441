@@ -19,7 +19,7 @@ void Client::connect() {
                            p->ai_protocol ) ) == -1 ) {
       perror( "client: socket" );
       continue;
-    } else if( ::connect( sockfd, p->ai_addr, p->ai_addrlen ) == -1 ) { // See above
+    } else if( ::connect( sockfd, p->ai_addr, p->ai_addrlen ) == -1 ) {
       close( sockfd );
       perror( "client: connect" );
       continue;

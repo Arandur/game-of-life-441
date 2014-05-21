@@ -34,14 +34,18 @@ void Game::run() {
       grid.setCell( fromJust( p_one_move ), PlayerNumber::ONE );
       grid.setCell( fromJust( p_two_move ), PlayerNumber::TWO );
 
-#ifdef DEBUG
-      puts( "Sending state to players..." );
-#endif  // DEBUG
-      send_state( p_one_fd );
-      send_state( p_two_fd );
+      grid.tick();
 
-      p_one_move = nullptr;
-      p_two_move = nullptr;
+      if( game_over() ) {
+        end();
+        running = false;
+      } else {
+        send_state( p_one_fd );
+        send_state( p_two_fd );
+
+        p_one_move = nullptr;
+        p_two_move = nullptr;
+      }
     }
   }
 }
@@ -90,6 +94,8 @@ std::function< void() > Game::getCommand( int fd ) {
 #ifdef DEBUG
       printf( "Game received move from player %d\n",
               ( fd == p_one_fd ) ? 1 : 2 );
+      printf( "Game: " );
+      print_move( buffer );
 #endif  // DEBUG
       if( fd == p_one_fd )
         p_one_move = Just( get_move( buffer ) );
@@ -120,8 +126,18 @@ std::function< void() > Game::getCommand( int fd ) {
   return [] {};
 }
 
+bool Game::game_over() const {
+  return grid.count_cells( PlayerNumber::ONE ) == 0 or
+         grid.count_cells( PlayerNumber::TWO ) == 0;
+}
+
 void Game::send_state( int fd ) {
   make_grid( buffer, grid );
+#ifdef DEBUG
+  puts( "Sending state..." );
+  printf( "Game: " );
+  print_grid( buffer );
+#endif  // DEBUG
   send( fd, buffer, 256, 0 );
 }
 

@@ -30,3 +30,9 @@ bool is_move( char (&)[256] );
 bool is_forfeit( char (&)[256] );
 
 bool is_end( char (&)[256] );
+
+#ifdef DEBUG
+void print_grid( char (&)[256] );
+
+void print_move( char (&)[256] );
+#endif  // DEBUG

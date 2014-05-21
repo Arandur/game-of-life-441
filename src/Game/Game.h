@@ -32,6 +32,7 @@ private:
 
   void grid_init();
   std::function< void() > getCommand( int );
+  bool game_over() const;
   void send_state( int );
   void end();
 };

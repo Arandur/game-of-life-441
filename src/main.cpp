@@ -8,12 +8,14 @@
 
 int main() {
   std::thread server_thread( &Server::run, new Server );
-  std::thread human_thread( &HumanPlayer::play, new HumanPlayer );
-  std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
+  //std::thread human_thread( &HumanPlayer::play, new HumanPlayer );
   std::thread computer_thread( &ComputerPlayer::play, new ComputerPlayer );
 
+  HumanPlayer hp;
+  hp.play();
+
   server_thread.detach();
-  human_thread.join();
+  //human_thread.join();
   computer_thread.join();
 
   return 0;

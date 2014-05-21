@@ -26,7 +26,9 @@ public:
     bool game = true;
 
     connect();
+#ifdef DEBUG
     puts( "Connected!" );
+#endif  // DEBUG
 
     while( game ) {
       receive( msg );
@@ -38,6 +40,8 @@ public:
         // This should be changed to effect a transition animation.
 #ifdef DEBUG
         puts( "Message is grid" );
+        printf( "Player: " );
+        print_grid( msg );
 #endif  // DEBUG
         grid = get_grid( msg );
       } else if( is_end( msg ) ) {
@@ -52,7 +56,7 @@ public:
         gc = fromJust( mgc );
         make_move( msg, gc );
 #ifdef DEBUG
-        printf( "( %d, %d )\n", gc.x, gc.y );
+        printf( "Player: ( %d, %d )\n", gc.x, gc.y );
 #endif  // DEBUG
         send( msg );
       } else {

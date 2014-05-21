@@ -16,19 +16,22 @@ auto make_window( Arguments&&... args ) {
   return make_resource( SDL_CreateWindow, SDL_DestroyWindow,
                         std::forward< Arguments >( args )... );
 }
-
+/*
 template < typename... Arguments >
 auto make_renderer( Arguments&&... args ) {
   return make_resource( SDL_CreateRenderer, SDL_DestroyRenderer,
                         std::forward< Arguments >( args )... );
 }
-
+*/
 Screen::Screen() try :
   window( make_window( "Game of Life", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT,
-                       SDL_WINDOW_SHOWN ) ),
+                       SDL_WINDOW_SHOWN ) ),/*
   renderer( make_renderer( window.get(), -1,
                            SDL_RENDERER_ACCELERATED |
-                           SDL_RENDERER_PRESENTVSYNC ) ) {
+                           SDL_RENDERER_PRESENTVSYNC ) )*/
+  renderer( SDL_CreateRenderer( window.get(), -1,
+                                SDL_RENDERER_ACCELERATED |
+                                SDL_RENDERER_PRESENTVSYNC ) ) {
   if( !window )
     throw std::runtime_error( "Could not create window" );
 
@@ -95,7 +98,7 @@ GridCoordinates Screen::GCfromSC( int x, int y ) {
 }
 
 void Screen::setRenderDrawColor( colors::Color_t color ) {
-  if( SDL_SetRenderDrawColor( renderer.get(), color.red,
+  if( SDL_SetRenderDrawColor( renderer/*.get()*/, color.red,
                                               color.green,
                                               color.blue,
                                               color.alpha ) != 0 )
@@ -103,22 +106,28 @@ void Screen::setRenderDrawColor( colors::Color_t color ) {
 }
 
 void Screen::render() {
-  SDL_RenderClear( renderer.get() );
+#ifdef DEBUG
+  puts( "Inside Screen::render()" );
+#endif  // DEBUG
+  SDL_RenderClear( renderer/*.get()*/ );
   setRenderDrawColor( colors::WHITE );
-  SDL_RenderFillRect( renderer.get(), nullptr );
+  SDL_RenderFillRect( renderer/*.get()*/, nullptr );
 
   render_grid();
 
-  SDL_RenderPresent( renderer.get() );
+  SDL_RenderPresent( renderer/*.get()*/ );
 }
 
 void Screen::render_grid() {
+#ifdef DEBUG
+  puts( "Inside Screen::render_grid()" );
+#endif  // DEBUG
   SDL_Rect rect;
   for( uint8_t x = 0; x < GRID_HEIGHT; ++x ) {
-    for( uint8_t y = 0; y < GRID_WIDTH ; ++y ) {
+    for( uint8_t y = 0; y < GRID_WIDTH; ++y ) {
       setRenderDrawColor( color_map[ grid[x][y] ] );
       rect = makeRectFromGC( x, y );
-      SDL_RenderFillRect( renderer.get(), &rect );
+      SDL_RenderFillRect( renderer/*.get()*/, &rect );
     }
   }
 }
