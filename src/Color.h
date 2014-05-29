@@ -2,6 +2,13 @@
 
 #include <cstdint>
 
+/**
+ * \brief Encapsulates color
+ *
+ * In SDL, there is a specific format for colors. This struct serves simply to
+ * wrap up the color data into a whole -- it also allows us to create color
+ * constants.
+ */
 struct Color {
   Color() :
     Color( 0, 0, 0, 0 ) {}
