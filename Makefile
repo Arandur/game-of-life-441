@@ -18,7 +18,7 @@ DCOMPILE_FLAGS = -D DEBUG
 # Add additional include paths
 INCLUDES = -I $(SRC_PATH)/
 # General linker settings
-LINK_FLAGS = -lSDL2
+LINK_FLAGS = -lSDL2 -llua
 # Additional release-specific linker settings
 RLINK_FLAGS =
 # Additional debug-specific linker settings
@@ -31,6 +31,8 @@ INSTALL_PREFIX = usr/local
 FILTERS = -readability/streams,-build/header_guard,-runtime/references
 # LaTeX compiler used
 LATEX = pdflatex
+# Name of Doxygen configuration file
+DOX_CFG_NAME = doxygen.cfg
 #### END PROJECT SETTINGS ####
 
 # Generally should not need to edit below this line
@@ -162,9 +164,7 @@ clean:
 	@echo "Deleting directories"
 	@$(RM) -r build
 	@$(RM) -r bin
-	@echo "Deleting code listing"
-	@$(RM) $(BIN_NAME).tex
-	@$(RM) $(BIN_NAME).pdf
+	@$(RM) -r doc
 	@$(RM) srs/srs.aux
 	@$(RM) srs/srs.log
 	@$(RM) srs/srs.synctex.gz
@@ -174,13 +174,10 @@ clean:
 help:
 	@egrep "^# target:" [Mm]akefile
 
-# target: listing     Create LaTeX code listing
-.PHONY: listing
-listing:
-	@python listing.py $(BIN_NAME)
-	@$(LATEX) $(BIN_NAME).tex
-	@$(RM) $(BIN_NAME).aux
-	@$(RM) $(BIN_NAME).log
+# target: doc         Create Doxygen documentation
+.PHONY: doc
+doc:
+	@doxygen $(DOX_CFG_NAME)
 
 # Main rule, checks the executable and symlinks to the output
 all: $(BIN_PATH)/$(BIN_NAME)
