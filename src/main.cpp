@@ -1,3 +1,5 @@
+/* @file */
+
 #include <cstdio>
 #include <vector>
 #include <string>
@@ -7,10 +9,6 @@
 #include <algorithm>
 #include <chrono>
 #include <random>
-
-#ifdef DEBUG
-#include <cassert>
-#endif  // DEBUG
 
 #include "SDL2/SDL.h"
 
@@ -42,7 +40,7 @@ extern "C" {
 #define N_STARTING_CELLS 10
 
 /**
- * \brief Encapsulates a move.
+ * @brief Encapsulates a move.
  *
  * This class is very simply a grid coordinate. It defines operator == and 
  * operator !=, but nothing else; therefore it cannot be used in a set. It would
@@ -61,7 +59,7 @@ struct Move {
 };
 
 /**
- * \brief A helper function for C-style SDL resources
+ * @brief A helper function for C-style SDL resources
  * 
  * Often in libraries either written in C or designed to work with either C or
  * C++, resources are managed by function pairs -- one function to allocate the
@@ -79,7 +77,7 @@ auto make_resource( Creator c, Destructor d, Args&&... args ) {
 }
 
 /**
- * \brief SDL Window.
+ * @brief SDL Window.
  */
 std::unique_ptr< SDL_Window, void(*)( SDL_Window* ) > window(
     make_resource( SDL_CreateWindow, SDL_DestroyWindow,
@@ -87,7 +85,7 @@ std::unique_ptr< SDL_Window, void(*)( SDL_Window* ) > window(
                    SDL_WINDOW_SHOWN ) );
 
 /**
- * \brief SDL Renderer.
+ * @brief SDL Renderer.
  *
  * SDL functions which require an SDL_Renderer* to be passed in should be passed
  * renderer.get().
@@ -97,6 +95,12 @@ std::unique_ptr< SDL_Renderer, void(*)( SDL_Renderer* ) > renderer(
                    window.get(), -1,
                    SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC ) );
 
+/**
+ * @brief Colors the given cell.
+ *
+ * @param m The cell
+ * @param c The color
+ */
 void color_cell( const Move& m, const Color& c ) {
   SDL_Rect rect;
 
@@ -110,7 +114,7 @@ void color_cell( const Move& m, const Color& c ) {
 }
 
 /**
- * \brief Renders the grid
+ * @brief Renders the grid
  */
 void render( const Grid< int >& grid ) {
   SDL_RenderClear( renderer.get() );
@@ -138,23 +142,23 @@ void render( const Grid< int >& grid ) {
   SDL_RenderPresent( renderer.get() );
 }
 
-std::default_random_engine generator;
-std::uniform_int_distribution< size_t > dist( 0, GRID_SIZE - 1 );
-
 /**
- * \brief Default AI behavior (if the provided script doesn't work)
+ * @brief Default AI behavior (if the provided script doesn't work)
  *
  * All this does is select a random cell in the grid. There's no actual thought.
  *
- * \return The selected move
+ * @return The selected move
  */
 Move builtin_ai_move( const Grid< int >& ) {
+  static std::default_random_engine generator;
+  static std::uniform_int_distribution< size_t > dist( 0, GRID_SIZE - 1 );
+ 
   size_t m = dist( generator );
   return { m / GRID_WIDTH, m % GRID_WIDTH };
 }
 
 /**
- * \brief Calls the AI script to receive the AI's move
+ * @brief Calls the AI script to receive the AI's move
  *
  * If at any point the provided lua script fails, this defaults to calling
  * builtin_ai_move.
@@ -246,7 +250,7 @@ Move get_ai_move( const Grid< int >& grid,
 }
 
 /**
- * \brief Default World behavior (if the provided script doesn't work)
+ * @brief Default World behavior (if the provided script doesn't work)
  *
  * This script implements the original World behavior based on Conway's Game of
  * Life. The same logic is implemented in cfg/world.lua.
@@ -290,7 +294,7 @@ void builtin_mutate_grid( Grid< int >& grid ) {
 }
 
 /**
- * \brief Calls the World script to mutate the grid.
+ * @brief Calls the World script to mutate the grid.
  *
  * If at any point the provided lua script fails, this defaults to calling
  * builtin_mutate_grid.
