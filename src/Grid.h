@@ -15,7 +15,7 @@
 template < class T >
 class Grid {
   // This class is here for memory safety, nothing more. It just encapsulates
-  // a row.
+  // a row. You do not have to care about this.
   class Row {
    public:
     Row() :
@@ -136,9 +136,9 @@ class Grid {
   /**
    * \brief Random access operator
    *
-   * Returns a row which in turn overloads operator [] in order to mimic
-   * a two-dimensional C-style array, but with bounds-checking. Elements
-   * in the array support assignment as well as read access.
+   * Returns a row class which in turn overloads operator [] in order to mimic
+   * a two-dimensional C-style array, but with bounds-checking. Elements in the
+   * array support assignment as well as read access.
    */
   Row operator [] ( const size_t& i ) {
     if( i < rows )
